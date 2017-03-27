@@ -23,7 +23,7 @@ public class Router {
     public Router(String peerip, int routerid, int port, String configfile, int neighborupdate, int routeupdate)
     {
     
-
+        // parse the configuration file
     
     }
     
@@ -48,9 +48,38 @@ public class Router {
 
     }
 
-    /* A simple test driver 
-         
-    */
+
+
+    public synchronized void processUpDateDS(DatagramPacket receivepacket)
+    {
+        // Update data structure(s).
+        // Forward link state message received to neighboring nodes
+        // based on broadcast algorithm used.
+    }
+
+
+    public synchronized void processUpdateNeighbor()
+    {
+        // Send node’s link state vector to neighboring nodes as link
+        // state message.
+        // Schedule task if Method-1 followed to implement recurring
+        // timer task.
+    }
+
+
+    public synchronized void processUpdateRoute()
+    {
+        // If link state vectors of all nodes received,
+        // Yes => Compute route info based on Dijkstra’s algorithm
+        // and print as per the output format.
+        // No => ignore the event.
+        // Schedule task if Method-1 followed to implement recurring
+        // timer task.
+    }
+
+
+
+    /* A simple test driver */
     public static void main(String[] args)
     {
         
