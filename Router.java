@@ -7,6 +7,10 @@
  *
  */
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
 
 public class Router {
 
@@ -83,7 +87,7 @@ public class Router {
     public static void main(String[] args)
     {
         
-        String peerip = "127.0.0.1"; // all router programs running in the same machine for simplicity
+        String peerip = "127.0.0.1"; // all router programs running in the same machine for simplicity. 127.0.0.1 is the same as localhost
         String configfile = "";
         int routerid = 999;
                 int neighborupdate = 1000; // milli-seconds, update neighbor with link state vector every second
