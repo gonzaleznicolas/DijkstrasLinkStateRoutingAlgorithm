@@ -1,5 +1,3 @@
-
-
 /**
  * Router Class
  * 
@@ -8,15 +6,17 @@
  * @version     1.0
  *
  */
+
+
 public class Router {
 
-    /**
-         * Constructor to initialize the program 
-         * 
-         * @param peerip        IP address of other routers (we assume that all routers are running in the same machine)
-         * @param routerid    Router ID
-         * @param port        Router UDP port number
-         * @param configfile    Configuration file name
+    /*
+        * Constructor to initialize the program 
+        * 
+        * @param peerip        IP address of other routers (we assume that all routers are running in the same machine)
+        * @param routerid    Router ID
+        * @param port        Router UDP port number
+        * @param configfile    Configuration file name
         * @param neighborupdate    link state update interval - used to update router's link state vector to neighboring nodes
         * @param routeupdate     Route update interval - used to update route information using Dijkstra's algorithm
     */
@@ -28,15 +28,15 @@ public class Router {
     }
     
 
-        /**
-         *  Compute route information based on Dijkstra's algorithm and print the same
-         * 
-         */
+    /**
+     *  Compute route information based on Dijkstra's algorithm and print the same
+     * 
+     */
     public void compute()
     {
 
 
-        /**** You may use the follwing piece of code to print routing table info *******/
+        //You may use the follwing piece of code to print routing table info
         /*
         System.out.println("Routing Info");
         System.out.println("RouterID \t Distance \t Prev RouterID");
