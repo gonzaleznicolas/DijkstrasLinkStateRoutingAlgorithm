@@ -266,9 +266,19 @@ public class Router {
         // Yes => Compute route info based on Dijkstra’s algorithm
         // and print as per the output format.
         // No => ignore the event.
-        // Schedule task if Method-1 followed to implement recurring
-        // timer task.
-        System.out.println(Arrays.deepToString(graphTable));
+
+        // first, check if the link state vector of all routers in the network has been received
+        boolean allVectorsReceived = true;
+        for (int i = 0; i < haveReceivedVector.length; i++)
+        {
+            if (haveReceivedVector[i] == false)
+                allVectorsReceived = false;
+        }
+
+        if (allVectorsReceived == true)
+        {
+            System.out.println(Arrays.deepToString(graphTable));
+        }
     }
 
 
@@ -281,7 +291,7 @@ public class Router {
         String configfile = "";
         int routerid = 999;
                 int neighborupdate = 1000; // milli-seconds, update neighbor with link state vector every second
-        int forwardtable = 10000; // milli-seconds, print route information every 10 seconds
+        int forwardtable = 1000; // milli-seconds, print route information every 10 seconds
         int port = -1; // router port number
     
         // check for command line arguments
