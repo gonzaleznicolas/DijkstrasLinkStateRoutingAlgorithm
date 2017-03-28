@@ -150,8 +150,10 @@ public class Router {
             StateVectorSender svs = new StateVectorSender(this);
             timer.scheduleAtFixedRate(svs, 0, neighborUpdateFreq);
 
-            // TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
             // set timer task to update node's route information every dijkstraFreq ms
+            RouteUpdater ru = new RouteUpdater(this);
+            timer.scheduleAtFixedRate(ru, 0, dijkstraFreq);
+
 
             // allocate space for receiving a LinkState message
             byte[] messageSpace = new byte[LinkState.MAX_SIZE];
@@ -161,11 +163,8 @@ public class Router {
             {
                 // recieve link state message from neighbor
                 udpSocket.receive(messagePacket);
-                processUpDateDS(messagePacket);
-
-                
-
-
+                processUpDateDS(messagePacket);  // updates data structures according to received vector and forwards it to neighbors according
+                                                 // to life time left algorithm
             }
 
 
@@ -224,11 +223,13 @@ public class Router {
                 }
             }
         }
+        /*
         else // else (hops left is now < 0 i.e. this message has already hopped so much it has certainly made it to all nodes) do nothing
         {
             // do nothing
-            System.out.println(Arrays.deepToString(graphTable));
+            //System.out.println(Arrays.deepToString(graphTable));
         }
+        */
 
     }
 
@@ -267,6 +268,7 @@ public class Router {
         // No => ignore the event.
         // Schedule task if Method-1 followed to implement recurring
         // timer task.
+        System.out.println(Arrays.deepToString(graphTable));
     }
 
 
