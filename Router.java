@@ -161,39 +161,9 @@ public class Router {
             {
                 // recieve link state message from neighbor
                 udpSocket.receive(messagePacket);
-                LinkState receivedMessage = new LinkState(messagePacket);
+                processUpDateDS(messagePacket);
 
-                int sourceID = receivedMessage.sourceId;
-                int receiverID = receivedMessage.destId;
-
-                int[] receivedVector = receivedMessage.getCost();
-
-                // update data structures
-                graphTable[sourceID] = receivedVector;
-                haveReceivedVector[sourceID] = true;
-
-
-                receivedMessage.hopsLeft--; // decrement the hopsLeft of receivedMessage
-                if (receivedMessage.hopsLeft >= 0)  // if hops left >=0, forward receivedMessage to all of your neighbors
-                {
-                    for (int i = 0; i < ports.length; i++)  // for each node i in the network
-                    {
-                        if ((ports[i] != -1) && (ports[i] != routerPort)) // if that node is a neighbor and not this router
-                        {
-                            // if here, ports[i] holds the port of node i (which is a neighbor with ID i)
-
-                            DatagramPacket packet = new DatagramPacket(receivedMessage.getBytes(), receivedMessage.getBytes().length, routersIP, ports[i]);
-                            try{ udpSocket.send(packet);}
-                            catch (IOException e){ System.out.println("There was an excepion sending the packet."); System.exit(0);}
-                        }
-                    }
-                }
-                else // else (hops left is now < 0 i.e. this message has already hopped so much it has certainly made it to all nodes) do nothing
-                {
-                    // do nothing
-                }
                 
-                System.out.println(Arrays.deepToString(graphTable));
 
 
             }
@@ -223,11 +193,43 @@ public class Router {
 
 
 
-    public synchronized void processUpDateDS(DatagramPacket receivepacket)
+    public synchronized void processUpDateDS(DatagramPacket messagePacket)
     {
-        // Update data structure(s).
+
+        LinkState receivedMessage = new LinkState(messagePacket);
+
+        int sourceID = receivedMessage.sourceId;
+        int receiverID = receivedMessage.destId;
+
+        int[] receivedVector = receivedMessage.getCost();
+
+        // update data structures
+        graphTable[sourceID] = receivedVector;
+        haveReceivedVector[sourceID] = true;
+
         // Forward link state message received to neighboring nodes
-        // based on broadcast algorithm used.
+        // based on time to live algorithm
+        receivedMessage.hopsLeft--; // decrement the hopsLeft of receivedMessage
+        if (receivedMessage.hopsLeft >= 0)  // if hops left >=0, forward receivedMessage to all of your neighbors
+        {
+            for (int i = 0; i < ports.length; i++)  // for each node i in the network
+            {
+                if ((ports[i] != -1) && (ports[i] != routerPort)) // if that node is a neighbor and not this router
+                {
+                    // if here, ports[i] holds the port of node i (which is a neighbor with ID i)
+
+                    DatagramPacket packet = new DatagramPacket(receivedMessage.getBytes(), receivedMessage.getBytes().length, routersIP, ports[i]);
+                    try{ udpSocket.send(packet);}
+                    catch (IOException e){ System.out.println("There was an excepion sending the packet."); System.exit(0);}
+                }
+            }
+        }
+        else // else (hops left is now < 0 i.e. this message has already hopped so much it has certainly made it to all nodes) do nothing
+        {
+            // do nothing
+            System.out.println(Arrays.deepToString(graphTable));
+        }
+
     }
 
 
