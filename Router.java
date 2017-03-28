@@ -26,6 +26,8 @@ public class Router {
     private int[] ports;        // info about the ports of my neighbors
     private int[][] graphTable; // an adjacency matrix representing the graph
 
+    public DatagramSocket udpSocket;
+    public Timer timer;
 
     /*
         * Constructor to initialize the program 
@@ -83,7 +85,7 @@ public class Router {
             {
                 for (int j = 0; j < graphTable[0].length; j++)
                 {
-                    graphTable[i][j] = -1;
+                    graphTable[i][j] = 999;
                 }
             }
 
@@ -105,7 +107,7 @@ public class Router {
             ports[routerID] = routerPort;
             graphTable[routerID][routerID] = 0; // the distance to myself is 0 
 
-            
+            /*
             System.out.println("number of nodes:");
             System.out.println(numberOfNodes);
 
@@ -114,7 +116,7 @@ public class Router {
 
             System.out.println("ports:");
             System.out.println(Arrays.toString(ports));
-            
+            */
 
 
         }
@@ -131,6 +133,13 @@ public class Router {
 
         try
         {
+            udpSocket = new DatagramSocket(); // initialize socket
+
+            timer = new Timer(true); // initialize timer. make thread daemon
+
+            // set timer task to send link state vector to neighbouring nodes every neighborUpdateFreq ms
+            StateVectorSender svs = new StateVectorSender(this);
+            timer.scheduleAtFixedRate(svs, 0, neighborUpdateFreq);
 
 
 
