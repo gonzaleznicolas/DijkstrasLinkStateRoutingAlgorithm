@@ -277,7 +277,11 @@ public class Router {
 
         if (allVectorsReceived == true)
         {
-            System.out.println(Arrays.deepToString(graphTable));
+            //System.out.println(Arrays.deepToString(graphTable));
+
+
+
+
         }
     }
 
