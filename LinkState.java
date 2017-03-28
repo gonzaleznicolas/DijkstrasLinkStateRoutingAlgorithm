@@ -10,15 +10,16 @@ import java.util.*;
  *
  * 
  * @author     Cyriac James
- * @version    1.0
+ * @author      Nicolas Gonzalez
+ * @version    1.1
  *
  */
 
 public class LinkState {
     
-    int sourceId; // id of the node that generates the link state message in the first place (link state vector always belong to this node)
-    int destId; // id of the destination node; this changes when a node forwards the message to its neighbor
-    int hopsLeft;
+    public int sourceId; // id of the node that generates the link state message in the first place (link state vector always belong to this node)
+    public int destId; // id of the destination node; this changes when a node forwards the message to its neighbor
+    public int hopsLeft;
         public final static int HEADER_SIZE = Integer.SIZE/8 * 3; // bytes (integer size is 4 bytes in java)
                                                                   // /8 because Integer.SIZE gives in bits. then *3 because the header has three integers.
         public final static int MAX_PAYLOAD_SIZE = Integer.SIZE/8 * 10; // bytes (i.e Max number of nodes is 10, integer size is 4 bytes in java)

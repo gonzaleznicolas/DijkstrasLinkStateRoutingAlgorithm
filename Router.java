@@ -172,11 +172,29 @@ public class Router {
                 graphTable[sourceID] = receivedVector;
                 haveReceivedVector[sourceID] = true;
 
-                // decrement the hopsLeft of receivedMessage
-                // if hops left is now < 0, do nothing
-                // else (hops left >=0, forward it to all of your neighbors)
 
-                //System.out.println(Arrays.deepToString(graphTable));
+                receivedMessage.hopsLeft--; // decrement the hopsLeft of receivedMessage
+                if (receivedMessage.hopsLeft >= 0)  // if hops left >=0, forward receivedMessage to all of your neighbors
+                {
+                    for (int i = 0; i < ports.length; i++)  // for each node i in the network
+                    {
+                        if ((ports[i] != -1) && (ports[i] != routerPort)) // if that node is a neighbor and not this router
+                        {
+                            // if here, ports[i] holds the port of node i (which is a neighbor with ID i)
+
+                            DatagramPacket packet = new DatagramPacket(receivedMessage.getBytes(), receivedMessage.getBytes().length, routersIP, ports[i]);
+                            try{ udpSocket.send(packet);}
+                            catch (IOException e){ System.out.println("There was an excepion sending the packet."); System.exit(0);}
+                        }
+                    }
+                }
+                else // else (hops left is now < 0 i.e. this message has already hopped so much it has certainly made it to all nodes) do nothing
+                {
+                    // do nothing
+                }
+                
+                System.out.println(Arrays.deepToString(graphTable));
+
 
             }
 
