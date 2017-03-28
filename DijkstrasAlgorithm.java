@@ -11,10 +11,15 @@
  *
  */
 
+import java.util.*;
+
 public class DijkstrasAlgorithm
 {
     private int[][] adjacencyMatrix;
     private int startingNode;
+
+    public final static int INFINITY = 999;
+    public final static int NIL = -1;
 
     public final static int WHITE = 1;
     public final static int RED = 2;
@@ -23,6 +28,8 @@ public class DijkstrasAlgorithm
     private int[] color;  // WHITE (1) means not yet visited, RED (2) means visited but shortest path not yet confirmed, BLUE (3) means shortest path confirmed
     private int[] d;  // distance array
     private int[] pi;  // predecessor array
+
+    private PriorityQueue<Pair> q;
 
     public static void main(String[] args)
     {
@@ -43,7 +50,22 @@ public class DijkstrasAlgorithm
 
         int start = 2;
 
-        DijkstrasAlgorithm da = new DijkstrasAlgorithm(test, start);
+        //DijkstrasAlgorithm da = new DijkstrasAlgorithm(test, start);
+
+        Pair one = new Pair(1,1);
+        Pair two = new Pair(2,2);
+        Pair three = new Pair(3,3);
+
+        PriorityQueue<Pair> queue = new PriorityQueue<Pair>(5, new MyComparator());
+        queue.add(one);
+        queue.add(three);
+        queue.add(two);
+
+        System.out.println(queue.poll().getNode());
+        System.out.println(queue.poll().getNode());
+        System.out.println(queue.poll().getNode());
+
+
     }
 
 
@@ -57,6 +79,25 @@ public class DijkstrasAlgorithm
     public void computeShortestPath()
     {
         
+        for (int v = 0; v < adjacencyMatrix.length; v++)
+        {
+            color[v] = WHITE;
+            d[v] = INFINITY;
+            pi[v] = NIL;
+        }
+
+        q = new PriorityQueue<Pair>(adjacencyMatrix.length, new MyComparator());  // initialize a priority queue with max capacity every node
+
+        color[startingNode] = RED;
+        d[startingNode] = 0;
+        q.add(new Pair(startingNode, 0));
+
+        while ( q.size() != 0) // while queue not empty
+        {
+
+        }
+        
+
     }
 
 }
