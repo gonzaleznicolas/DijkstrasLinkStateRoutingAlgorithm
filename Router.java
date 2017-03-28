@@ -56,6 +56,12 @@ public class Router {
      */
     public void compute()
     {
+        // initialize data structures to some preliminary values
+        numberOfNodes = -1;
+        ports = new int[1];
+        graphTable = new int[1][1];
+
+
         // read the configuration file into the data structures numberOfNodes, ports, and graphTable
         FileInputStream fin = null;
         try
@@ -99,6 +105,7 @@ public class Router {
             ports[routerID] = routerPort;
             graphTable[routerID][routerID] = 0; // the distance to myself is 0 
 
+            
             System.out.println("number of nodes:");
             System.out.println(numberOfNodes);
 
@@ -107,6 +114,7 @@ public class Router {
 
             System.out.println("ports:");
             System.out.println(Arrays.toString(ports));
+            
 
 
         }
@@ -119,6 +127,19 @@ public class Router {
                 System.out.println("error closing file.");
                 System.exit(0); // exit
             }
+        }
+
+        try
+        {
+
+
+
+
+        }
+        catch (Exception e)
+        {
+            System.out.println("An unexpected error occured. The program will terminate.");
+            System.exit(0);
         }
 
 
