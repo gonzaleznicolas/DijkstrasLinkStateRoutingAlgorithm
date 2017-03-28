@@ -14,6 +14,19 @@ import java.util.*;
 
 public class Router {
 
+
+    private String ipAddress;
+    private int routerID;
+    private int routerPort;
+    private String configFile;
+    private int neighborUpdateFreq;   // how frequently to send state vector to neighbors (in ms)
+    private int dijkstraFreq;     // how frequently to recalculate and print best route
+
+    private int numberOfNodes;
+    private int[] ports;        // info about the ports of my neighbors
+    private int[][] graphTable; // an adjacency matrix representing the graph
+
+
     /*
         * Constructor to initialize the program 
         * 
@@ -26,8 +39,13 @@ public class Router {
     */
     public Router(String peerip, int routerid, int port, String configfile, int neighborupdate, int routeupdate)
     {
-    
-        // parse the configuration file
+        // set argument instance variables
+        ipAddress = peerip;
+        routerID = routerid;
+        routerPort = port;
+        configFile = configfile;
+        neighborUpdateFreq = neighborupdate;
+        dijkstraFreq = routeupdate;
     
     }
     
@@ -38,6 +56,71 @@ public class Router {
      */
     public void compute()
     {
+        // read the configuration file into the data structures numberOfNodes, ports, and graphTable
+        FileInputStream fin = null;
+        try
+        {
+            fin = new FileInputStream(configFile);
+            Scanner fileReader = new Scanner(fin);
+
+            // read first number: the number of nodes
+            numberOfNodes = fileReader.nextInt();
+
+
+            // this allows us to initiailze the ports array and the graphTable array
+            ports = new int[numberOfNodes];
+            graphTable = new int[numberOfNodes][numberOfNodes];
+
+            for (int i = 0; i < ports.length; i++) {ports[i] = -1;}    // initialize the ports array to -1
+
+            for (int i = 0; i < graphTable.length; i++)    // initialize the graphTable to all -1's
+            {
+                for (int j = 0; j < graphTable[0].length; j++)
+                {
+                    graphTable[i][j] = -1;
+                }
+            }
+
+            // read the rest of the file into the appropriate data structures
+            while (fileReader.hasNext())
+            {
+                fileReader.next(); // ignore the node label. i will work with the node ID
+                int neighborID = fileReader.nextInt();  // the id of the neighbor
+                int c = fileReader.nextInt();  // the cost of the edge
+                // the cost from router #routerID to router #neighborID is c. update the graphTable
+                graphTable[routerID][neighborID] = c;
+                graphTable[neighborID][routerID] = c;
+
+                ports[neighborID] = fileReader.nextInt();
+
+            }
+
+            // fill in the ports and graphTable with own information
+            ports[routerID] = routerPort;
+            graphTable[routerID][routerID] = 0; // the distance to myself is 0 
+
+            System.out.println("number of nodes:");
+            System.out.println(numberOfNodes);
+
+            System.out.println("graph table:");
+            System.out.println(Arrays.deepToString(graphTable));
+
+            System.out.println("ports:");
+            System.out.println(Arrays.toString(ports));
+
+
+        }
+        catch (Exception e){
+            System.out.println("Exception reading file: " + e.getMessage());
+            System.exit(0); // exit
+        }finally{
+            try{if (fin != null){fin.close();}}
+            catch (IOException ex){
+                System.out.println("error closing file.");
+                System.exit(0); // exit
+            }
+        }
+
 
 
         //You may use the follwing piece of code to print routing table info
