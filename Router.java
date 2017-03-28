@@ -26,6 +26,7 @@ public class Router {
     private int numberOfNodes;
     private int[] ports;        // info about the ports of my neighbors
     private int[][] graphTable; // an adjacency matrix representing the graph
+    private boolean[] haveReceivedVector;  // a table which indicates for which nodes we have already received a vector
 
     public DatagramSocket udpSocket;
     public Timer timer;
@@ -79,6 +80,7 @@ public class Router {
             // this allows us to initiailze the ports array and the graphTable array
             ports = new int[numberOfNodes];
             graphTable = new int[numberOfNodes][numberOfNodes];
+            haveReceivedVector = new boolean[numberOfNodes];
 
             for (int i = 0; i < ports.length; i++) {ports[i] = -1;}    // initialize the ports array to -1
 
@@ -89,6 +91,8 @@ public class Router {
                     graphTable[i][j] = 999;
                 }
             }
+
+            for (int i = 0; i < haveReceivedVector.length; i++) {haveReceivedVector[i] = false;}  // initially we have not received any vectors
 
             // read the rest of the file into the appropriate data structures
             while (fileReader.hasNext())
@@ -107,6 +111,7 @@ public class Router {
             // fill in the ports and graphTable with own information
             ports[routerID] = routerPort;
             graphTable[routerID][routerID] = 0; // the distance to myself is 0 
+            haveReceivedVector[routerID] = true;
 
             /*
             System.out.println("number of nodes:");
@@ -134,7 +139,7 @@ public class Router {
 
         try
         {
-            udpSocket = new DatagramSocket(); // initialize socket
+            udpSocket = new DatagramSocket(routerPort); // initialize socket
 
             routersIP = InetAddress.getByName(ipAddress);
 
@@ -145,7 +150,31 @@ public class Router {
             StateVectorSender svs = new StateVectorSender(this);
             timer.scheduleAtFixedRate(svs, 0, neighborUpdateFreq);
 
-            while(true);
+            // TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+            // set timer task to update node's route information every dijkstraFreq ms
+
+            // allocate space for receiving a LinkState message
+            byte[] messageSpace = new byte[LinkState.MAX_SIZE];
+            DatagramPacket messagePacket = new DatagramPacket(messageSpace, messageSpace.length);
+
+            while(true)
+            {
+                // recieve link state message from neighbor
+                udpSocket.receive(messagePacket);
+                LinkState receivedMessage = new LinkState(messagePacket);
+
+                int sourceID = receivedMessage.sourceId;
+                int receiverID = receivedMessage.destId;
+
+                int[] receivedVector = receivedMessage.getCost();
+
+                // update data structures
+                graphTable[sourceID] = receivedVector;
+                haveReceivedVector[sourceID] = true;
+
+                System.out.println(Arrays.deepToString(graphTable));
+
+            }
 
 
 
@@ -244,7 +273,7 @@ public class Router {
         
         Router router = new Router(peerip, routerid, port, configfile, neighborupdate, forwardtable);
         
-        System.out.printf("Router initialized..running");
+        System.out.println("Router initialized..running");
         router.compute();
     }
 
