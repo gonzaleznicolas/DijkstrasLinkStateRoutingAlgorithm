@@ -22,6 +22,7 @@ public class Router {
     private int neighborUpdateFreq;   // how frequently to send state vector to neighbors (in ms)
     private int dijkstraFreq;     // how frequently to recalculate and print best route
 
+    private InetAddress routersIP;
     private int numberOfNodes;
     private int[] ports;        // info about the ports of my neighbors
     private int[][] graphTable; // an adjacency matrix representing the graph
@@ -135,12 +136,16 @@ public class Router {
         {
             udpSocket = new DatagramSocket(); // initialize socket
 
+            routersIP = InetAddress.getByName(ipAddress);
+
+
             timer = new Timer(true); // initialize timer. make thread daemon
 
             // set timer task to send link state vector to neighbouring nodes every neighborUpdateFreq ms
             StateVectorSender svs = new StateVectorSender(this);
             timer.scheduleAtFixedRate(svs, 0, neighborUpdateFreq);
 
+            while(true);
 
 
 
@@ -178,9 +183,25 @@ public class Router {
     public synchronized void processUpdateNeighbor()
     {
         // Send node’s link state vector to neighboring nodes as link
-        // state message.
-        // Schedule task if Method-1 followed to implement recurring
-        // timer task.
+        // state message over UDP
+        
+        for (int i = 0; i < ports.length; i++)  // for each node i in the network
+        {
+            if ((ports[i] != -1) && (ports[i] != routerPort)) // if that node is a neighbor and not this router
+            {
+                // if here, ports[i] holds the port of node i (which is a neighbor with ID i)
+
+                // make the link state message
+                LinkState message = new LinkState(routerID, i, graphTable[routerID]); // source ID, destination ID, state vector
+                
+                // send it over UDP
+                DatagramPacket packet = new DatagramPacket(message.getBytes(), message.getBytes().length, routersIP, ports[i]);
+                try{ udpSocket.send(packet);}
+                catch (IOException e){ System.out.println("There was an excepion sending the packet."); System.exit(0);}
+            }
+        }
+
+
     }
 
 
