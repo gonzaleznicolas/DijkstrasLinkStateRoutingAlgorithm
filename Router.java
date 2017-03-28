@@ -172,7 +172,11 @@ public class Router {
                 graphTable[sourceID] = receivedVector;
                 haveReceivedVector[sourceID] = true;
 
-                System.out.println(Arrays.deepToString(graphTable));
+                // decrement the hopsLeft of receivedMessage
+                // if hops left is now < 0, do nothing
+                // else (hops left >=0, forward it to all of your neighbors)
+
+                //System.out.println(Arrays.deepToString(graphTable));
 
             }
 
@@ -221,7 +225,8 @@ public class Router {
                 // if here, ports[i] holds the port of node i (which is a neighbor with ID i)
 
                 // make the link state message
-                LinkState message = new LinkState(routerID, i, graphTable[routerID]); // source ID, destination ID, state vector
+                LinkState message = new LinkState(routerID, i, numberOfNodes,graphTable[routerID]); // source ID, destination ID, max hops, state vector
+                // since the graph is connected, max number of hops = numberOfNodes ensures the message will reach every node
                 
                 // send it over UDP
                 DatagramPacket packet = new DatagramPacket(message.getBytes(), message.getBytes().length, routersIP, ports[i]);

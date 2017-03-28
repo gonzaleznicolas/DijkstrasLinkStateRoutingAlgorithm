@@ -18,8 +18,9 @@ public class LinkState {
     
     int sourceId; // id of the node that generates the link state message in the first place (link state vector always belong to this node)
     int destId; // id of the destination node; this changes when a node forwards the message to its neighbor
-        public final static int HEADER_SIZE = Integer.SIZE/8 * 2; // bytes (integer size is 4 bytes in java)
-                                                                  // /8 because Integer.SIZE gives in bits. then *2 because the header has two integers.
+    int hopsLeft;
+        public final static int HEADER_SIZE = Integer.SIZE/8 * 3; // bytes (integer size is 4 bytes in java)
+                                                                  // /8 because Integer.SIZE gives in bits. then *3 because the header has three integers.
         public final static int MAX_PAYLOAD_SIZE = Integer.SIZE/8 * 10; // bytes (i.e Max number of nodes is 10, integer size is 4 bytes in java)
         public final static int MAX_SIZE = HEADER_SIZE + MAX_PAYLOAD_SIZE; // bytes
 
@@ -37,9 +38,10 @@ public class LinkState {
         * @param destid        id of destination node, this changes when a node forwards the message to its neighbor        
         * @param cost        link cost vector
      */
-    public LinkState(int sourceid, int destid, int[] cost) {
+    public LinkState(int sourceid, int destid, int max_hops, int[] cost) {
         this.sourceId = sourceid;
         this.destId = destid;
+        this.hopsLeft = max_hops;
         setCost(cost);
     }
     
@@ -62,7 +64,7 @@ public class LinkState {
     * @param ls    LinkState message
     */
     public LinkState(LinkState ls) {
-        this(ls.sourceId, ls.destId, ls.cost);
+        this(ls.sourceId, ls.destId, ls.hopsLeft, ls.cost);
     }
 
           /**
@@ -114,10 +116,16 @@ public class LinkState {
                 bytes[3] = (byte) (sourceId >>> 24);
 
 
-        bytes[4] = (byte) (destId);
+                bytes[4] = (byte) (destId);
                 bytes[5] = (byte) (destId >>> 8);
                 bytes[6] = (byte) (destId >>> 16);
                 bytes[7] = (byte) (destId >>> 24);
+
+
+                bytes[8] = (byte) (hopsLeft);
+                bytes[9] = (byte) (hopsLeft >>> 8);
+                bytes[10] = (byte) (hopsLeft >>> 16);
+                bytes[11] = (byte) (hopsLeft >>> 24);                
 
             // store payload data -- link state vector
                 int baseindex = HEADER_SIZE; // in bytes
@@ -160,12 +168,17 @@ public class LinkState {
                 int b3 = bytes[3] & 0xFF;
                 sourceId = (b3 << 24) + (b2 << 16) + (b1 << 8) + (b0);
 
-        b0 = bytes[4] & 0xFF;
+                b0 = bytes[4] & 0xFF;
                 b1 = bytes[5] & 0xFF;
                 b2 = bytes[6] & 0xFF;
                 b3 = bytes[7] & 0xFF;
                 destId = (b3 << 24) + (b2 << 16) + (b1 << 8) + (b0);
 
+                b0 = bytes[8] & 0xFF;
+                b1 = bytes[9] & 0xFF;
+                b2 = bytes[10] & 0xFF;
+                b3 = bytes[11] & 0xFF;
+                hopsLeft = (b3 << 24) + (b2 << 16) + (b1 << 8) + (b0);
 
                 // construct  payload -- link state vector
                 int baseindex = HEADER_SIZE; // in bytes
