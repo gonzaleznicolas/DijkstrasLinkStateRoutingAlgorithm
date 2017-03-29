@@ -24,4 +24,9 @@ public class Pair {
         this.cost = cost;
     }
 
+    public boolean equals(Pair p1, Pair p2)
+    {
+        return (p1.node == p2.node && p1.cost == p2.cost);
+    }
+
 }

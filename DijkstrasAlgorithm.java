@@ -1,6 +1,6 @@
 /**
  * Dijkstra's shortest path algorithm for a graph in adjacency matrix representation.
- * Does no error checking. It assumes adjacencyMatrix represents an appropriate graph (no negative edges, etc.)
+ * Does no error checking. It assumes adjacencyMatrix represents an appropriate graph (all edge weights > 0, etc.)
  * adjacencyMatrix must be a perfect square (both dimensions are equal).
  * 999 in the adjacencyMatrix means there is no edge.
  * There are adjacencyMatrix.length - 1 nodes in the graph
@@ -50,8 +50,12 @@ public class DijkstrasAlgorithm
 
         int start = 2;
 
-        //DijkstrasAlgorithm da = new DijkstrasAlgorithm(test, start);
+        DijkstrasAlgorithm da = new DijkstrasAlgorithm(test, start);
+        da.computeShortestPath();
 
+
+
+/*
         Pair one = new Pair(1,1);
         Pair two = new Pair(2,2);
         Pair three = new Pair(3,3);
@@ -64,7 +68,7 @@ public class DijkstrasAlgorithm
         System.out.println(queue.poll().getNode());
         System.out.println(queue.poll().getNode());
         System.out.println(queue.poll().getNode());
-
+*/
 
     }
 
@@ -74,6 +78,13 @@ public class DijkstrasAlgorithm
     {
         this.adjacencyMatrix = am;
         this.startingNode = sn;
+
+        this.d = new int[adjacencyMatrix.length];
+        this.pi = new int[adjacencyMatrix.length];
+        this.color = new int[adjacencyMatrix.length];
+
+        this.q = new PriorityQueue<Pair>(adjacencyMatrix.length, new MyComparator());  // initialize a priority queue with max capacity every node
+
     }
 
     public void computeShortestPath()
@@ -86,17 +97,49 @@ public class DijkstrasAlgorithm
             pi[v] = NIL;
         }
 
-        q = new PriorityQueue<Pair>(adjacencyMatrix.length, new MyComparator());  // initialize a priority queue with max capacity every node
+        //q = new PriorityQueue<Pair>(adjacencyMatrix.length, new MyComparator());  // initialize a priority queue with max capacity every node
 
         color[startingNode] = RED;
         d[startingNode] = 0;
-        q.add(new Pair(startingNode, 0));
+        q.add(new Pair(startingNode, 0)); // add staring node to q with priority 0
 
-        while ( q.size() != 0) // while queue not empty
+        while (q.size() != 0) // while queue not empty
         {
+            Pair vc = q.poll();  // extract min
+            int v = vc.getNode();
+            int c = vc.getCost();
 
+            for (int u = 0; u < adjacencyMatrix.length; u++)
+            {
+                if ((adjacencyMatrix[v][u] != INFINITY) && (adjacencyMatrix[v][u] != 0)) // if u is not a non neighbor and not v, then it is a neighbor of v
+                {
+                    // if here, u is a neighbor of v
+                    if (color[u] == WHITE)
+                    {
+                        d[u] = c + adjacencyMatrix[v][u];
+                        color[u] = RED;
+                        pi[u] = v;
+                        q.add(new Pair(u, d[u]));
+                    }
+                    else if (color[u] == RED)
+                    {
+                        if (c + adjacencyMatrix[v][u] < d[u])
+                        {
+                            int old = d[u];
+                            d[u] = c + adjacencyMatrix[v][u];
+                            pi[u] = v;
+                            // replace Pair(u,old) with Pair(u,d[u]) in q
+                            q.remove(new Pair(u, old));                           //// possible source of error
+                            q.add(new Pair(u, d[u]));
+                        }
+                    }
+                }
+            }
+            color[v] = BLUE;
         }
         
+        System.out.println(Arrays.toString(d));
+        System.out.println(Arrays.toString(pi));
 
     }
 
