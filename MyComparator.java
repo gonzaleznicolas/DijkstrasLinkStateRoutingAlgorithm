@@ -1,3 +1,9 @@
+/**
+ * @author      Nicolas Gonzalez
+ * @version     1.0, 27 Mar 2017
+ *
+ */
+
 import java.util.Comparator;
 
 public class MyComparator implements Comparator<Pair>

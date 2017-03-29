@@ -48,7 +48,7 @@ public class DijkstrasAlgorithm
         test[4] = a4;
 
 
-        int start = 0;
+        int start = 2;
 
         DijkstrasAlgorithm da = new DijkstrasAlgorithm(test, start);
         da.computeShortestPath();
@@ -123,7 +123,7 @@ public class DijkstrasAlgorithm
                             d[u] = c + adjacencyMatrix[v][u];
                             pi[u] = v;
                             // replace Pair(u,old) with Pair(u,d[u]) in q
-                            q.remove(new Pair(u, old));                           //// possible source of error
+                            q.remove(new Pair(u, old));
                             q.add(new Pair(u, d[u]));
                         }
                     }

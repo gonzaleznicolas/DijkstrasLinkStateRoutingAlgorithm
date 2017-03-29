@@ -113,17 +113,6 @@ public class Router {
             graphTable[routerID][routerID] = 0; // the distance to myself is 0 
             haveReceivedVector[routerID] = true;
 
-            /*
-            System.out.println("number of nodes:");
-            System.out.println(numberOfNodes);
-
-            System.out.println("graph table:");
-            System.out.println(Arrays.deepToString(graphTable));
-
-            System.out.println("ports:");
-            System.out.println(Arrays.toString(ports));
-            */
-
 
         }
         catch (Exception e){
@@ -167,26 +156,12 @@ public class Router {
                                                  // to life time left algorithm
             }
 
-
-
         }
         catch (Exception e)
         {
             System.out.println("An unexpected error occured. The program will terminate.");
             System.exit(0);
-        }
-
-
-
-        //You may use the follwing piece of code to print routing table info
-        /*
-        System.out.println("Routing Info");
-        System.out.println("RouterID \t Distance \t Prev RouterID");
-        for(int i = 0; i < numNodes; i++)
-          {
-              System.out.println(i + "\t\t   " + distancevector[i] +  "\t\t\t" +  prev[i]);
-          }
-        */
+        }    
 
     }
 
@@ -223,13 +198,9 @@ public class Router {
                 }
             }
         }
-        /*
-        else // else (hops left is now < 0 i.e. this message has already hopped so much it has certainly made it to all nodes) do nothing
-        {
+        // else (hops left is now < 0 i.e. this message has already hopped so much it has certainly made it to all nodes)
             // do nothing
-            //System.out.println(Arrays.deepToString(graphTable));
-        }
-        */
+
 
     }
 
@@ -279,8 +250,25 @@ public class Router {
         {
             //System.out.println(Arrays.deepToString(graphTable));
 
+            DijkstrasAlgorithm da = new DijkstrasAlgorithm(graphTable, routerID);
+            da.computeShortestPath();
+            int[] distances = da.getDistanceArray();
+            int[] predecessors = da.getPredecessorArray();
 
+            // the predecessor array shows -1 for itself. according to the output for this assignment, the predecessor for getting
+            // to one's self should be one's own ID. make this modification:
+            for (int i = 0; i < predecessors.length; i++)
+            {
+                if (predecessors[i] == -1)
+                    predecessors[i] = routerID;
+            }
 
+            System.out.println("Routing Info computed at node "+routerID+":");
+            System.out.println("RouterID \t Distance \t Prev RouterID");
+            for(int i = 0; i < numberOfNodes; i++)
+            {
+                System.out.println(i + "\t\t   " + distances[i] +  "\t\t\t" +  predecessors[i]);
+            }
 
         }
     }
@@ -295,7 +283,7 @@ public class Router {
         String configfile = "";
         int routerid = 999;
                 int neighborupdate = 1000; // milli-seconds, update neighbor with link state vector every second
-        int forwardtable = 1000; // milli-seconds, print route information every 10 seconds
+        int forwardtable = 10000; // milli-seconds, print route information every 10 seconds
         int port = -1; // router port number
     
         // check for command line arguments

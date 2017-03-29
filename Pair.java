@@ -1,3 +1,8 @@
+/**
+ * @author      Nicolas Gonzalez
+ * @version     1.0, 27 Mar 2017
+ *
+ */
 public class Pair {
     private int node;
     private int cost;
