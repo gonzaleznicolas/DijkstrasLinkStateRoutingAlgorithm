@@ -48,28 +48,18 @@ public class DijkstrasAlgorithm
         test[4] = a4;
 
 
-        int start = 2;
+        int start = 0;
 
         DijkstrasAlgorithm da = new DijkstrasAlgorithm(test, start);
         da.computeShortestPath();
 
-
-
-/*
-        Pair one = new Pair(1,1);
-        Pair two = new Pair(2,2);
-        Pair three = new Pair(3,3);
-
-        PriorityQueue<Pair> queue = new PriorityQueue<Pair>(5, new MyComparator());
-        queue.add(one);
-        queue.add(three);
-        queue.add(two);
-
-        System.out.println(queue.poll().getNode());
-        System.out.println(queue.poll().getNode());
-        System.out.println(queue.poll().getNode());
-*/
-
+        /*
+        System.out.println("\nStarting node: " + da.startingNode);
+        System.out.println("\nDistance array:");
+        System.out.println(Arrays.toString(da.d));
+        System.out.println("\nPredecessor array:");
+        System.out.println(Arrays.toString(da.pi));
+        */
     }
 
 
@@ -86,6 +76,10 @@ public class DijkstrasAlgorithm
         this.q = new PriorityQueue<Pair>(adjacencyMatrix.length, new MyComparator());  // initialize a priority queue with max capacity every node
 
     }
+
+    public int[] getDistanceArray() {return d;}
+
+    public int[] getPredecessorArray() {return pi;}
 
     public void computeShortestPath()
     {
@@ -138,9 +132,6 @@ public class DijkstrasAlgorithm
             color[v] = BLUE;
         }
         
-        System.out.println(Arrays.toString(d));
-        System.out.println(Arrays.toString(pi));
-
     }
 
 }
